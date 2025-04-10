@@ -1,6 +1,6 @@
-#ifndef VERTICES_H
-#define VERTICES_H
-
+#ifndef VERTICES_HPP
+#define VERTICES_HPP
+/*
 float vertices[] = {
     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
      0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -43,7 +43,59 @@ float vertices[] = {
      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
     -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+};*/
+
+float vertices[] = {
+    // Face de trás (usa valores normais)
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 
+
+    // Face da frente (coordenadas >1.0 para testar GL_REPEAT e GL_MIRRORED_REPEAT)
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 
+     0.5f, -0.5f,  0.5f,  3.0f, 0.0f,  // Valores > 1.0
+     0.5f,  0.5f,  0.5f,  3.0f, 3.0f, 
+     0.5f,  0.5f,  0.5f,  3.0f, 3.0f, 
+    -0.5f,  0.5f,  0.5f,  0.0f, 3.0f, 
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 
+
+    // Face esquerda (coordenadas negativas para testar GL_MIRRORED_REPEAT)
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f, 
+    -0.5f,  0.5f, -0.5f, -1.0f, -1.0f, 
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f, 
+
+    // Face direita (fixa 0 e 1 para testar GL_CLAMP_TO_EDGE)
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 
+     0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 
+
+    // Face de baixo (valores extremos para GL_CLAMP_TO_BORDER)
+    -0.5f, -0.5f, -0.5f, -2.0f,  2.0f, 
+     0.5f, -0.5f, -0.5f,  2.0f,  2.0f, 
+     0.5f, -0.5f,  0.5f,  2.0f, -2.0f, 
+     0.5f, -0.5f,  0.5f,  2.0f, -2.0f, 
+    -0.5f, -0.5f,  0.5f, -2.0f, -2.0f, 
+    -0.5f, -0.5f, -0.5f, -2.0f,  2.0f, 
+
+    // Face de cima (normal, sem mudanças)
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f  
 };
+
+
 
 float verticesF[] = {
     //  x      y      z      // texture
@@ -55,8 +107,8 @@ float verticesF[] = {
     0.0f,  0.55f,  0.0f,     0.0f, 0.0f,   // 5
     0.5f,  0.55f,  0.0f,     1.0f, 0.0f,   // 6
     0.5f,  0.8f,   0.0f,     0.0f, 0.0f,   // 7
-    -0.2f,  0.8f,   0.0f,     1.0f, 0.0f,   // 8
-    -0.2f, -0.75f,  0.0f,     0.0f, 0.0f,   // 9
+    -0.2f,  0.8f,   0.0f,    1.0f, 0.0f,   // 8
+    -0.2f, -0.75f,  0.0f,    0.0f, 0.0f,   // 9
 
     0.0f, -0.75f,  0.3f,     1.0f, 1.0f,   //10
     0.0f,  0.05f,  0.3f,     0.0f, 1.0f,   //11
@@ -66,8 +118,8 @@ float verticesF[] = {
     0.0f,  0.55f,  0.3f,     0.0f, 1.0f,   //15
     0.5f,  0.55f,  0.3f,     1.0f, 1.0f,   //16
     0.5f,  0.8f,   0.3f,     0.0f, 1.0f,   //17
-    -0.2f,  0.8f,   0.3f,     1.0f, 1.0f,   //18
-    -0.2f, -0.75f,  0.3f,     0.0f, 1.0f    //19
+    -0.2f,  0.8f,   0.3f,    1.0f, 1.0f,   //18
+    -0.2f, -0.75f,  0.3f,    0.0f, 1.0f    //19
 };
 
 unsigned int indicesF[] = {
@@ -91,7 +143,7 @@ unsigned int indicesF[] = {
     0, 9, 19,   //baixo
     19, 10, 0,
     8, 18, 7,
-    7, 17, 18,   //topo
+    7, 17, 18,  //topo
     7, 17, 16,
     16, 6, 7,
     6, 16, 15,
