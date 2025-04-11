@@ -57,8 +57,9 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("/home/kadufi/Desktop/ifcg/tests/3.3.shader.vs", "/home/kadufi/Desktop/ifcg/tests/3.3.shader1.fs");
-    Shader ourShader1("/home/kadufi/Desktop/ifcg/tests/3.3.shader.vs", "/home/kadufi/Desktop/ifcg/tests/3.3.shader2.fs");
+    Shader ourShader("/home/kadufi/Desktop/ifcg/tests/shader/3.3.shader.vs", "/home/kadufi/Desktop/ifcg/tests/shader/3.3.shader1.fs");
+    Shader ourShader1("/home/kadufi/Desktop/ifcg/tests/shader/3.3.shader.vs", "/home/kadufi/Desktop/ifcg/tests/shader/3.3.shader2.fs");
+    Shader ourShader2("/home/kadufi/Desktop/ifcg/tests/shader/cubesky.vs", "/home/kadufi/Desktop/ifcg/tests/shader/cubesky.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -76,9 +77,9 @@ int main()
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
 
-    unsigned int VBO[2], VAO[2], EBO;
-    glGenVertexArrays(2, VAO);
-    glGenBuffers(2, VBO);
+    unsigned int VBO[3], VAO[3], EBO;
+    glGenVertexArrays(3, VAO);
+    glGenBuffers(3, VBO);
     glGenBuffers(1, &EBO);
 
     // ---------------------------
@@ -120,18 +121,46 @@ int main()
     glEnableVertexAttribArray(1);
 
     glBindVertexArray(0); // Desvincular o VAO[1]
+//skybox=============================================================================================================
+    // Skybox é o terceiro
+    glBindVertexArray(VAO[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+
+    // Apenas posição (sem textura ou normais)
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    glBindVertexArray(0); // Unbind
+
 // load and create a texture=========================================================================================================================== 
     
     //setBorderColor(1.0, 1.0, 1.0, 1.0);
-    Texture texture0("2D","LINEAR","REPEAT");
-    texture0.setImg("/home/kadufi/Desktop/ifcg/tests/awesomeface.png");
+    Texture texture0(GL_TEXTURE_2D,GL_LINEAR,GL_MIRRORED_REPEAT);
+    texture0.setImg("/home/kadufi/Desktop/ifcg/tests/image/awesomeface.png");
 
-    Texture texture1("2D");
+    Texture texture1(GL_TEXTURE_2D);
     setBorderColor(1.0, 0.0, 1.0, 1.0);
-    texture1.setWrap("BORDER","BORDER");
-    texture1.setFiltering("LINEAR","LINEAR");  
-    texture1.setImg("/home/kadufi/Desktop/ifcg/tests/container.jpg");  
+    texture1.setWrap(GL_CLAMP_TO_BORDER,GL_CLAMP_TO_BORDER);
+    texture1.setFiltering(GL_LINEAR,GL_LINEAR);  
+    texture1.setImg("/home/kadufi/Desktop/ifcg/tests/image/container.jpg");
     
+    //skybox
+    std::vector<std::string> faces = {
+        "/home/kadufi/Desktop/ifcg/tests/image/cloudy/bluecloud_rt.jpg",
+        "/home/kadufi/Desktop/ifcg/tests/image/cloudy/bluecloud_lf.jpg",
+        "/home/kadufi/Desktop/ifcg/tests/image/cloudy/bluecloud_up.jpg",
+        "/home/kadufi/Desktop/ifcg/tests/image/cloudy/bluecloud_dn.jpg",
+        "/home/kadufi/Desktop/ifcg/tests/image/cloudy/bluecloud_ft.jpg",
+        "/home/kadufi/Desktop/ifcg/tests/image/cloudy/bluecloud_bk.jpg"
+    };
+    
+    Texture skybox(GL_TEXTURE_CUBE_MAP);
+    skybox.setCubeImg(faces);
+    skybox.setCubeDefaults();
+    //skybox.setCubeWrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+    //skybox.setCubeFiltering(GL_LINEAR, GL_LINEAR);
+
 //=========================================================================================================================================================
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
@@ -141,7 +170,10 @@ int main()
 
     ourShader1.use();
     ourShader1.setInt("texture0", 1);
-    ourShader1.setInt("texture1", 0);   
+    ourShader1.setInt("texture1", 0);
+    
+    ourShader2.use();
+    ourShader2.setInt("skybox", 2);
 
     // render loop
     // -----------
@@ -159,6 +191,7 @@ int main()
         // bind textures on corresponding texture units
         texture0.activateAndBind(0);
         texture1.activateAndBind(1);
+        skybox.activateAndBind(2);
         
         // activate shader
         //ourShader1.use();
@@ -187,7 +220,7 @@ int main()
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
         
-        ourShader1.use();
+        ourShader1.use();   
         ourShader1.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
         ourShader1.setMat4("view", view);
 
@@ -198,6 +231,26 @@ int main()
         glBindVertexArray(VAO[1]);
         glDrawElements(GL_TRIANGLES, (sizeof(indicesF)/sizeof(indicesF[0])), GL_UNSIGNED_INT, 0);
 
+        //skybox
+        // Desabilita depth writing para a skybox não sobrescrever objetos na frente
+        glDepthFunc(GL_LEQUAL);
+
+        // Usa o shader da skybox
+        ourShader2.use();
+
+        // Usa a mesma projection e view dos cubos
+        glm::mat4 viewSkybox = glm::mat4(glm::mat3(view)); // Remove translação
+        ourShader2.setMat4("view", viewSkybox);
+        ourShader2.setMat4("projection", projection);
+
+        // Bind do VAO e textura
+        glBindVertexArray(VAO[2]);
+        // Desenha a skybox
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // Restaura o depth padrão
+        glDepthFunc(GL_LESS);
+        
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
