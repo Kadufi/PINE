@@ -140,7 +140,7 @@ int main()
     texture0.setImg("/home/kadufi/Desktop/ifcg/tests/image/awesomeface.png");
 
     Texture texture1(GL_TEXTURE_2D);
-    setBorderColor(1.0, 0.0, 1.0, 1.0);
+    texture1.setBorderColor(1.0, 0.0, 1.0, 1.0);
     texture1.setWrap(GL_CLAMP_TO_BORDER,GL_CLAMP_TO_BORDER);
     texture1.setFiltering(GL_LINEAR,GL_LINEAR);  
     texture1.setImg("/home/kadufi/Desktop/ifcg/tests/image/container.jpg");

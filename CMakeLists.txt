@@ -107,6 +107,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(
     MAIN_TEST_SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/tests/main.cpp
+    ${CMAKE_SOURCE_DIR}/tests/texture.cpp
 )
 
 # Adding executables for testing
@@ -142,6 +143,7 @@ target_include_directories(
     main-test
     PUBLIC
     ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/tests 
 )
 
 if (WIN32 OR MSVC)
