@@ -12,3 +12,4 @@ void main()
     vec4 pos = projection * view * vec4(aPos, 1.0);
     gl_Position = pos.xyww; // for depth = 1.0
 }
+ 
