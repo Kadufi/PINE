@@ -32,6 +32,12 @@ bool firstMouse = true;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
+//grid
+float blockSize = 1.0f; // lado do cubo
+int gridX = 3;
+int gridY = 3;
+int gridZ = 3;
+
 
 int main()
 {
@@ -73,18 +79,18 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("/home/kadufi/Desktop/ifcg/tests/shader/3.3.shader.vs", "/home/kadufi/Desktop/ifcg/tests/shader/3.3.shader1.fs");
-    Shader ourShader1("/home/kadufi/Desktop/ifcg/tests/shader/3.3.shader.vs", "/home/kadufi/Desktop/ifcg/tests/shader/3.3.shader2.fs");
-    Shader ourShader2("/home/kadufi/Desktop/ifcg/tests/shader/cubesky.vs", "/home/kadufi/Desktop/ifcg/tests/shader/cubesky.fs");
+    Shader shaderPlano("/home/kadufi/Desktop/ifcg/tests/shader/plano.vs", "/home/kadufi/Desktop/ifcg/tests/shader/plano.fs");
+    Shader shaderSkyBox("/home/kadufi/Desktop/ifcg/tests/shader/cubesky.vs", "/home/kadufi/Desktop/ifcg/tests/shader/cubesky.fs");
+    Shader shaderTerra("/home/kadufi/Desktop/ifcg/tests/shader/terra.vs", "/home/kadufi/Desktop/ifcg/tests/shader/terra.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
    
 
 
-    unsigned int VBO[1], VAO[1], EBO[1];
-    glGenVertexArrays(1, VAO);
-    glGenBuffers(1, VBO);
-    glGenBuffers(1, EBO);
+    unsigned int VBO[3], VAO[3], EBO[3];
+    glGenVertexArrays(3, VAO);
+    glGenBuffers(3, VBO);
+    glGenBuffers(3, EBO);
 //skybox=============================================================================================================
     // Skybox é o terceiro
     glBindVertexArray(VAO[0]);
@@ -97,17 +103,43 @@ int main()
 
     glBindVertexArray(0); // Unbind
 
+//plano====================================================================================================================
+
+    glBindVertexArray(VAO[1]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesPlano), verticesPlano, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[1]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesPlano), indicesPlano, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+//cubo=====================================================================================================================
+    glBindVertexArray(VAO[2]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesCubo), verticesCubo, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[2]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesCubo), indicesCubo, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+
 // load and create a texture=========================================================================================================================== 
+    //plano
     stbi_set_flip_vertically_on_load(true);
     //setBorderColor(1.0, 1.0, 1.0, 1.0);
-    Texture texture0(GL_TEXTURE_2D,GL_LINEAR,GL_MIRRORED_REPEAT);
-    texture0.setImg("/home/kadufi/Desktop/ifcg/tests/image/awesomeface.png");
-
-    Texture texture1(GL_TEXTURE_2D);
-    texture1.setBorderColor(1.0, 0.0, 1.0, 1.0);
-    texture1.setWrap(GL_CLAMP_TO_BORDER,GL_CLAMP_TO_BORDER);
-    texture1.setFiltering(GL_LINEAR,GL_LINEAR);  
-    texture1.setImg("/home/kadufi/Desktop/ifcg/tests/image/container.jpg");
+    Texture plano0(GL_TEXTURE_2D,GL_LINEAR,GL_REPEAT);
+    plano0.setImg("/home/kadufi/Desktop/ifcg/tests/image/bedrock.jpeg");
     
     stbi_set_flip_vertically_on_load(false);
     //skybox
@@ -123,84 +155,110 @@ int main()
     Texture skybox(GL_TEXTURE_CUBE_MAP);
     skybox.setCubeImg(faces);
     skybox.setCubeDefaults();
-    //skybox.setCubeWrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
-    //skybox.setCubeFiltering(GL_LINEAR, GL_LINEAR);
+    
+    //terra
+    stbi_set_flip_vertically_on_load(true);
 
-//=========================================================================================================================================================
+    Texture terra(GL_TEXTURE_2D, GL_LINEAR, GL_REPEAT);
+    terra.setImg("/home/kadufi/Desktop/ifcg/tests/image/dirt.jpg");
+
+    //=========================================================================================================================================================
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
-    ourShader.use();
-    ourShader.setInt("texture0", 0);
-    ourShader.setInt("texture1", 1);
-
-    ourShader1.use();
-    ourShader1.setInt("texture0", 1);
-    ourShader1.setInt("texture1", 0);
+    shaderPlano.use();
+    shaderPlano.setInt("plano0", 0);
     
-    ourShader2.use();
-    ourShader2.setInt("skybox", 2);
+    shaderSkyBox.use();
+    shaderSkyBox.setInt("skybox", 1);
+
+    shaderTerra.use();
+    shaderTerra.setInt("terra", 2);
 
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
-
-        // per-frame time logic
-        // --------------------
+        // --- Tempo ---
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // input
-        // -----
+        // --- Entrada ---
         processInput(window);
 
-        // render
-        // ------
+        // --- Limpeza ---
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // bind textures on corresponding texture units
-        skybox.activateAndBind(2);
-        
-        
-        
+        // --- Matriz de projeção (calcular só se a janela mudou tamanho) ---
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), 
+                                                (float)SCR_WIDTH / (float)SCR_HEIGHT, 
+                                                0.1f, 100.0f);
 
-        // create transformations
-        glm::mat4 view          = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-        glm::mat4 projection    = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        view = camera.GetViewMatrix();
+        // --- Matriz de view (câmera) ---
+        glm::mat4 view = camera.GetViewMatrix();
 
-        //skybox
-        // Desabilita depth writing para a skybox não sobrescrever objetos na frente
-        glDepthMask(GL_FALSE);
-        glDepthFunc(GL_LEQUAL);
+        // --- RENDER SKYBOX ---
+        glDepthMask(GL_FALSE);               // desativa escrita no depth buffer
+        glDepthFunc(GL_LEQUAL);              // skybox deve passar no depth <=
 
-        // Usa o shader da skybox
-        ourShader2.use();
+        shaderSkyBox.use();
+        glm::mat4 viewSkybox = glm::mat4(glm::mat3(view)); // remove translação
+        shaderSkyBox.setMat4("view", viewSkybox);
+        shaderSkyBox.setMat4("projection", projection);
 
-        // Usa a mesma projection e view dos cubos
-        glm::mat4 viewSkybox = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-        ourShader2.setMat4("view", viewSkybox);
-        ourShader2.setMat4("projection", projection);
+        // Ativa e vincula textura da skybox
+        skybox.activateAndBind(1);  // geralmente skybox usa a textura na unidade 0
 
-        // Bind do VAO e textura
         glBindVertexArray(VAO[0]);
-        // Desenha a skybox
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        // Restaura o depth padrão
-        glDepthMask(GL_TRUE);
+        glDepthMask(GL_TRUE);               // reativa escrita no depth buffer
         glDepthFunc(GL_LESS);
-        // -------------------------------------------------------------------------------
-        
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
+        // --- RENDER PLANO ---
+        shaderPlano.use();
+
+        // Construir model do plano — se não muda, pode declarar fora do loop
+        glm::mat4 modelPlano = glm::mat4(1.0f);
+        
+        shaderPlano.setMat4("model", modelPlano);
+        shaderPlano.setMat4("view", view);
+        shaderPlano.setMat4("projection", projection);
+
+        // Ativa e vincula textura do plano
+        plano0.activateAndBind(0);
+
+        glBindVertexArray(VAO[1]);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+       
+        // --- Terra ---
+        shaderTerra.use();
+
+        
+        shaderTerra.setMat4("view", view);
+        shaderTerra.setMat4("projection", projection);
+
+         // desenhar grade de cubos
+        for (int x = 0; x < gridX; x++) {
+            for (int y = 0; y < gridY; y++) {
+                for (int z = 0; z < gridZ; z++) {
+                    glm::mat4 model = glm::mat4(1.0f);
+                    model = glm::translate(model, glm::vec3(x * blockSize, y * blockSize, z * blockSize));
+                    shaderTerra.setMat4("model", model);
+
+                    glBindVertexArray(VAO[2]);
+                    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+                }
+            }
+        }
+        
+        terra.activateAndBind(2);
+        // --- Finaliza frame ---
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
