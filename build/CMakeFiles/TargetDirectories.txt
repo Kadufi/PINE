@@ -1,0 +1,6 @@
+/home/kadufi/Desktop/ifcg/build/CMakeFiles/copy-compile-commands.dir
+/home/kadufi/Desktop/ifcg/build/CMakeFiles/docs.dir
+/home/kadufi/Desktop/ifcg/build/CMakeFiles/ifcg.dir
+/home/kadufi/Desktop/ifcg/build/CMakeFiles/main-test.dir
+/home/kadufi/Desktop/ifcg/build/CMakeFiles/edit_cache.dir
+/home/kadufi/Desktop/ifcg/build/CMakeFiles/rebuild_cache.dir

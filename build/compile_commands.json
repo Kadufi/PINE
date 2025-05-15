@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/home/kadufi/Desktop/ifcg/build",
+  "command": "/usr/bin/cc -DDEBUG -DGLAD_GLAPI_EXPORT -DGLAD_GLAPI_EXPORT_BUILD -Difcg_EXPORTS -I/home/kadufi/Desktop/ifcg/include -fPIC -o CMakeFiles/ifcg.dir/src/glad/glad.c.o -c /home/kadufi/Desktop/ifcg/src/glad/glad.c",
+  "file": "/home/kadufi/Desktop/ifcg/src/glad/glad.c"
+},
+{
+  "directory": "/home/kadufi/Desktop/ifcg/build",
+  "command": "/usr/bin/c++ -DDEBUG -DGLAD_GLAPI_EXPORT -DPROJECT_ROOT_FOLDER=\\\"/home/kadufi/Desktop/ifcg\\\" -I/home/kadufi/Desktop/ifcg/include -I/home/kadufi/Desktop/ifcg/tests  -o CMakeFiles/main-test.dir/tests/main.cpp.o -c /home/kadufi/Desktop/ifcg/tests/main.cpp",
+  "file": "/home/kadufi/Desktop/ifcg/tests/main.cpp"
+},
+{
+  "directory": "/home/kadufi/Desktop/ifcg/build",
+  "command": "/usr/bin/c++ -DDEBUG -DGLAD_GLAPI_EXPORT -DPROJECT_ROOT_FOLDER=\\\"/home/kadufi/Desktop/ifcg\\\" -I/home/kadufi/Desktop/ifcg/include -I/home/kadufi/Desktop/ifcg/tests  -o CMakeFiles/main-test.dir/tests/texture.cpp.o -c /home/kadufi/Desktop/ifcg/tests/texture.cpp",
+  "file": "/home/kadufi/Desktop/ifcg/tests/texture.cpp"
+}
+]
